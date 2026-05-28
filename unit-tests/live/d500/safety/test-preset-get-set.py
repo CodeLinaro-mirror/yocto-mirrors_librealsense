@@ -60,8 +60,8 @@ valid_sp_json_str = """
                 "zone_polygon":
                 {
                     "p0": {"x": 0.5, "y":  0.1},
-                    "p1": {"x": 0.8, "y":  0.1},
-                    "p2": {"x": 0.8, "y": -0.1},
+                    "p1": {"x": 1.2, "y":  0.1},
+                    "p2": {"x": 1.2, "y": -0.1},
                     "p3": {"x": 0.5, "y": -0.1}
                 },
                 "safety_trigger_confidence": 3,
@@ -71,10 +71,10 @@ valid_sp_json_str = """
             {
                 "zone_polygon":
                 {
-                    "p0": {"x": 0.8, "y":  0.1},
-                    "p1": {"x": 1.2, "y":  0.1},
-                    "p2": {"x": 1.2, "y": -0.1},
-                    "p3": {"x": 0.8, "y": -0.1}
+                    "p0": {"x": 0.3, "y":  0.1},
+                    "p1": {"x": 0.5, "y":  0.1},
+                    "p2": {"x": 0.5, "y": -0.1},
+                    "p3": {"x": 0.3, "y": -0.1}
                 },
                 "safety_trigger_confidence": 3,
                 "reserved": [0, 0, 0, 0, 0, 0, 0]
@@ -169,7 +169,7 @@ valid_sp_json_str = """
             "7":
             {
                 "attributes": 0,
-                "minimal_range": 0,
+                "minimal_range": 0.5,
                 "region_of_interests":
                 {
                     "vertex_0": [0, 0],
@@ -200,6 +200,13 @@ valid_sp_json_str = """
     }
 }
 """
+
+#############################################################################################
+
+# save current presets to restore them at the end
+original_presets = []
+for x in range(64):
+    original_presets.append(safety_sensor.get_safety_preset(x))
 
 #############################################################################################
 
@@ -236,6 +243,14 @@ test.check_equal_jsons(json.loads(new_safety_preset), json.loads(read_result))
 
 # restore original table
 safety_sensor.set_safety_preset(index, previous_result)
+test.finish()
+
+#############################################################################################
+
+test.start("Restore all original safety presets")
+for x in range(64):
+    log.d("Restore preset ID =", x)
+    safety_sensor.set_safety_preset(x, original_presets[x])
 test.finish()
 
 #############################################################################################

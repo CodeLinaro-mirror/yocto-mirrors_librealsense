@@ -131,7 +131,7 @@ valid_sic_table_as_json_str = """
             "l_2_total_threshold": 10,
             "hkr_stl_timeout": 15,
             "mcu_stl_timeout": 10,
-            "sustained_aicv_frame_drops": 95,
+            "sustained_aicv_frame_drops": 90,
             "ossd_self_test_pulse_width": 23
         },
         "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -152,6 +152,10 @@ def change_config(sic_table_as_json_str):
 dev,_ = test.find_first_device_or_exit()
 safety_sensor = dev.first_safety_sensor()
 tw.start_wrapper(dev)
+
+# save current SIC table to restore it at the end
+original_sic_config = safety_sensor.get_safety_interface_config()
+
 #############################################################################################
 test.start("Valid get/set scenario")
 
@@ -224,6 +228,14 @@ config_from_flash = safety_sensor.get_safety_interface_config(rs.calib_location.
 # checking config is the same in flash and in ram
 test.check_equal_jsons(json.loads(config_from_ram), json.loads(config_from_flash))
 
+test.finish()
+
+#############################################################################################
+test.start("Restore original SIC table")
+safety_sensor.set_safety_interface_config(original_sic_config)
+# verify restore landed
+restored_sic = safety_sensor.get_safety_interface_config()
+test.check_equal_jsons(json.loads(restored_sic), json.loads(original_sic_config))
 test.finish()
 
 #############################################################################################
