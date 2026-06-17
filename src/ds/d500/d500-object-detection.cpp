@@ -106,7 +106,10 @@ namespace librealsense
         for( auto p : results )
         {
             if( p->get_stream_type() == RS2_STREAM_OBJECT_DETECTION )
+            {
                 assign_stream( _owner->_object_detection_stream, p );
+                p->set_name( "Person Detection" );
+            }
         }
         return results;
     }

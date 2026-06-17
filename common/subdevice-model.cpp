@@ -361,6 +361,18 @@ namespace rs2
             depth_colorizer->set_option(RS2_OPTION_VISUAL_PRESET, option_value);
         }
 
+        // Disable histogram equalization for D585 prototype variants (0C07, 0C08).
+        // Must be applied AFTER the VISUAL_PRESET restore block above: re-setting the Dynamic
+        // preset (default) re-enables histogram equalization via its on_set callback.
+        if (s->supports(RS2_CAMERA_INFO_PRODUCT_ID))
+        {
+            std::string device_pid = s->get_info(RS2_CAMERA_INFO_PRODUCT_ID);
+            if (device_pid == "0C07" || device_pid == "0C08")
+            {
+                depth_colorizer->set_option(RS2_OPTION_HISTOGRAM_EQUALIZATION_ENABLED, 0.f);
+            }
+        }
+
         std::stringstream ss;
         ss << "##" << dev.get_info(RS2_CAMERA_INFO_NAME)
             << "/" << s->get_info(RS2_CAMERA_INFO_NAME)

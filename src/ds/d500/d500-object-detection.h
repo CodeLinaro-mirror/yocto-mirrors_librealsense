@@ -41,7 +41,7 @@ namespace librealsense
                                                std::shared_ptr< uvc_sensor > uvc_sensor,
                                                std::map< uint32_t, rs2_format > od_fourcc_to_rs2_format,
                                                std::map< uint32_t, rs2_stream > od_fourcc_to_rs2_stream )
-            : synthetic_sensor( "Object Detection Camera", uvc_sensor, owner, od_fourcc_to_rs2_format, od_fourcc_to_rs2_stream )
+            : synthetic_sensor( "Person Detection Camera", uvc_sensor, owner, od_fourcc_to_rs2_format, od_fourcc_to_rs2_stream )
             , _owner( owner )
         {
         }
