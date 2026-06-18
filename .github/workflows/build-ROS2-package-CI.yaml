@@ -20,6 +20,7 @@ jobs:
           - kilted
           - rolling
           - jazzy
+          - lyrical
 
         include:
           # Humble Hawksbill
@@ -30,13 +31,17 @@ jobs:
           - docker_image: ubuntu:noble
             ros_distribution: kilted
 
-          # Rolling Ridley
-          - docker_image: ubuntu:noble
+          # Rolling Ridley (tracks Resolute on Ubuntu 26.04)
+          - docker_image: ubuntu:26.04
             ros_distribution: rolling
 
           # Jazzy Jalisco
           - docker_image: ubuntu:noble
             ros_distribution: jazzy
+
+          # Lyrical
+          - docker_image: ubuntu:resolute
+            ros_distribution: lyrical
 
     container:
       image: ${{ matrix.docker_image }}
