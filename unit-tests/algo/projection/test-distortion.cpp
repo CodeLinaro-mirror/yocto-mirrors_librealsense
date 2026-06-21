@@ -4,6 +4,10 @@
 //#cmake: static!
 //#cmake:add-file ../../../src/proc/sse/sse-pointcloud.cpp
 
+// The CUDA cases below need a GPU, which GHA runners don't have. Marking the test as requiring a
+// live device makes LibCI run it on the Jenkins Jetson agent, the only CI machine that builds with CUDA.
+//#test:device:jetson D457
+
 #include "../algo-common.h"
 #include <librealsense2/rsutil.h>
 #include <src/proc/sse/sse-pointcloud.h>

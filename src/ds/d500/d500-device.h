@@ -52,7 +52,7 @@ namespace librealsense
         void add_embedded_filter( std::shared_ptr< embedded_filter_interface > filter ) { _embedded_filters.push_back( filter ); }
 
     protected:
-        const d500_device * _owner;
+        d500_device * _owner;
         mutable std::atomic< float > _depth_units;
         float _stereo_baseline_mm;
 

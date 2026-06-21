@@ -47,8 +47,10 @@ namespace librealsense
         }
 
         stream_profiles init_stream_profiles() override;
+        void start( rs2_frame_callback_sptr callback ) override;
+        void stop() override;
 
     protected:
-        const d500_object_detection * _owner;
+        d500_object_detection * _owner;
     };
 }

@@ -250,6 +250,7 @@ namespace rs2
         std::shared_ptr< dispatcher > set_dispatcher() const { return _set_dispatcher; }
 
     private:
+        std::vector<int> get_common_fps() const;
         bool draw_resolutions(std::string& error_message, std::string& label, std::function<void()> streaming_tooltip, float col0, float col1);
         bool draw_fps(std::string& error_message, std::string& label, std::function<void()> streaming_tooltip, float col0, float col1);
         bool draw_streams_and_formats(std::string& error_message, std::string& label, std::function<void()> streaming_tooltip, float col0, float col1);

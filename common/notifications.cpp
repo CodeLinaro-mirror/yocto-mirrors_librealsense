@@ -699,7 +699,7 @@ namespace rs2
 
         ImGui::SetCursorScreenPos({ float(x + 20), float(y + 16) });
         ImGui::Text("Welcome to"); ImGui::SameLine();
-        std::string txt = rsutils::string::from() << "librealsense " << RS2_API_VERSION_STR << "!";
+        std::string txt = rsutils::string::from() << "librealsense " << RS2_API_FULL_VERSION_STR << "!";
 
         ImGui::PushStyleColor(ImGuiCol_Text, alpha(white, 1.f - t));
         ImGui::Text("%s", txt.c_str());
