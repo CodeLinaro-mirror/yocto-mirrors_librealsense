@@ -1,4 +1,4 @@
-# Improved Close Range Depth (librealsense2-enhanced-depth)
+# Improved Close Range Depth (librealsense2-enhanced-depth).
 
 These examples demonstrate usage of the **Improved Close Range Depth** library. The library
 is a closed-source depth enhancement module designed to operate on top of the
