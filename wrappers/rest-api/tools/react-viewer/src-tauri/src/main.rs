@@ -12,6 +12,16 @@ use std::path::PathBuf;
 #[cfg(not(debug_assertions))]
 use std::io::{BufRead, BufReader};
 
+// Validate executable name to prevent command injection
+fn validate_executable_name(name: &str) -> bool {
+    // Only allow alphanumeric, dots, underscores, and hyphens
+    // This prevents directory traversal and shell metacharacters
+    name.chars().all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '_' || c == '-')
+        && !name.contains("..")
+        && !name.starts_with('/')
+        && !name.starts_with('-')
+}
+
 // Global state to hold FastAPI subprocess
 #[derive(Clone)]
 struct AppState {
@@ -135,6 +145,12 @@ async fn start_api_server(api_process: Arc<Mutex<Option<Child>>>, _api_port: Arc
 #[cfg(not(debug_assertions))]
 /// Find the FastAPI executable in bundled resources
 fn find_api_executable(exe_name: &str, app_handle: &AppHandle) -> Option<PathBuf> {
+    // Validate executable name to prevent command injection and directory traversal
+    if !validate_executable_name(exe_name) {
+        eprintln!("[Tauri] Invalid executable name: '{}' contains disallowed characters", exe_name);
+        return None;
+    }
+
     // In production, try to get the resource directory from the app handle
     if let Some(resource_dir) = app_handle.path_resolver().resource_dir() {
         let candidates = vec![
