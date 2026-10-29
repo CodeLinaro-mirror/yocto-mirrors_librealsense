@@ -40,7 +40,10 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <spawn.h>
+#include <cerrno>
 #include <pwd.h>
+extern char ** environ;
 #endif
 
 #include <GLFW/glfw3.h>
@@ -67,23 +70,6 @@ namespace rs2
         return std::regex_match( url, url_regex );
     }
 
-#if defined __linux__ || defined __APPLE__
-    // Launches exe with a single argument, bypassing the shell so arg can never be interpreted as shell syntax.
-    static bool run_detached( const char * exe, const char * arg )
-    {
-        pid_t pid = fork();
-        if( pid < 0 )
-            return false;
-        if( pid == 0 )
-        {
-            execlp( exe, exe, arg, (char *) nullptr );
-            _exit( 127 );
-        }
-        int status = 0;
-        return waitpid( pid, &status, 0 ) == pid && WIFEXITED( status ) && WEXITSTATUS( status ) == 0;
-    }
-#endif
-
     bool open_url(const char* url)
     {
         if( !url || !is_valid_url( url ) )
@@ -94,10 +80,19 @@ namespace rs2
         // No browser or no handler is the user's environment, not a program error
 #if (defined(_WIN32) || defined(_WIN64))
         bool ok = reinterpret_cast<INT_PTR>(ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOW)) >= 32;
-#elif defined __linux__ || defined(__linux__)
-        bool ok = run_detached( "xdg-open", url );
-#elif __APPLE__
-        bool ok = run_detached( "open", url );
+#elif defined __linux__ || defined __APPLE__
+#ifdef __APPLE__
+        const char * opener = "open";
+#else
+        const char * opener = "xdg-open";
+#endif
+        // No shell: url is passed as a single argv entry, so shell syntax in it is never interpreted
+        char * argv[] = { (char *)opener, (char *)url, nullptr };
+        pid_t pid = 0;
+        int status, rc = -1;
+        if( posix_spawnp( &pid, opener, nullptr, nullptr, argv, environ ) == 0 )
+            while( ( rc = waitpid( pid, &status, 0 ) ) == -1 && errno == EINTR ) {}
+        bool ok = rc == pid && WIFEXITED( status ) && WEXITSTATUS( status ) == 0;
 #else
 #pragma message ( "\nLibrealsense couldn't establish OS/Build environment. \
 Some auxillary functionalities might be affected. Please report this message if encountered")
